@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expected value calculation for UNI'S ON AIR</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+      function Calculate() {
+        var selectValue = document.getElementById("bonus").value;
+        var inputValue1=[document.getElementById("Trigger-Interval-Time-1").value,document.getElementById("Trigger-probability-1").value,document.getElementById("Activation-time-1").value,document.getElementById("Activation-effect-1").value];
+        var inputValue2=[document.getElementById("Trigger-Interval-Time-2").value,document.getElementById("Trigger-probability-2").value,document.getElementById("Activation-time-2").value,document.getElementById("Activation-effect-2").value];
+        inputValue1 = inputValue1.map(Number);
+        inputValue2 = inputValue2.map(Number);
+
+        activationRate=document.getElementById("Activation-rate").value;
+        if(activationRate!=1){
+          inputValue1[1] = inputValue1[1]*activationRate;
+          inputValue2[1] = inputValue2[1]*activationRate;
+        }
+        var result = new Array(3);
+        result[0]=(inputValue1[1]*0.01*inputValue1[2]*inputValue1[3])/(inputValue1[1]*0.01*inputValue1[2]+inputValue1[0]);
+        result[1]=(inputValue2[1]*0.01*inputValue2[2]*inputValue2[3])/(inputValue2[1]*0.01*inputValue2[2]+inputValue2[0])/3;
+        console.log(result[0]);
+
+
+        if (selectValue === "option1") {
+          if(isNaN(result[0]) || result[0] == 0){
+            swal({
+              title: "エラー",
+              text: "0または空が入力されている可能性があるよ。",
+              icon: "error",
+            });
+            return;
+          }
+          swal({
+            title: Math.round(result[0]*100)/100,
+            text: "計算完了!!上の数字が期待値だよ。",
+            icon: "success",
+            
+          });
+        } else if (selectValue === "option2") {
+          if(isNaN(result[1]) || result[1] == 0){
+            swal({
+              title: "エラー",
+              text: "0または空が入力されている可能性があるよ。",
+              icon: "error",
+            });
+            return;
+          }
+          swal({
+            title: Math.round(result[1]*100)/100,
+            text: "計算完了!!上の数字が期待値だよ。",
+            icon: "success",
+            
+          });
+        } else if(selectValue === "option3"){
+          if(isNaN(result[0]) || isNaN(result[1])){
+            swal({
+              title: "エラー",
+              text: "0または空が入力されている可能性があるよ。",
+              icon: "error",
+            });
+            return;
+          }
+          swal({
+            title: Math.round((result[0]+result[1])*100)/100,
+            text: "計算完了!!上の数字が期待値だよ。",
+            icon: "success",
+            
+          });
+        }else{
+          var rate=((100+inputValue1[3])+(1.00+inputValue1[3]*0.01)*(50*(1+inputValue2[3]*0.01)))/150;
+          rate =  Math.floor(decimalPart(rate)*100 * 10000) / 10000;
+          result[2]=(inputValue1[1]*0.01*inputValue1[2]*Number(rate))/(inputValue1[1]*0.01*inputValue1[2]+inputValue1[0]);
+          swal({
+            title: Math.round((result[2])*100)/100,
+            text: "計算完了!!上の数字が期待値だよ。",
+            icon: "success",
+            
+          });
+        }
+      }
+      function decimalPart(num){
+        numStr = num+'';
+        dotIdx  = numStr.indexOf("."),
+        result  = "0." + (dotIdx > -1 ? numStr.substring(dotIdx + 1) : "0");
+        return  parseFloat( ((num>0)?'+':'-') + result );
+      }
+    </script>
+</head>
+<body>
+    <div class="formbold-main-wrapper">
+        <div class="formbold-form-wrapper">
+            <div class="formbold-form-title">
+              <h2>UNI'S ON AIR</h2>
+              <p>
+                シーンカードの期待値計算サイト
+              </p>
+            </div>
+            
+            <div class="formbold-input-group">
+                <label class="formbold-form-label">
+                 スキルの種類を選択してください。
+                </label>
+        
+                <select class="formbold-form-select" id="bonus">
+                  <option value="option1" selected>スコアボーナス</option>
+                  <option value="option2">コンボボーナス</option>
+                  <option value="option3">スコアボーナス+コンボボーナス(別々に発動)</option>
+                  <option value="option4">スコアボーナス+コンボボーナス(同時発動)</option>
+                </select>
+
+                <label class="formbold-form-label">
+                  スキル発動率を入力してください。
+                </label>
+                <input
+                  type="number"
+                  id="Activation-rate"
+                  class="formbold-form-input"
+                  value="1"
+                />
+
+            </div>
+
+            <div class="tab-wrap">
+              <input id="tab01" type="radio" name="tab" class="tab-switch" checked="checked"><label class="tab-label" for="tab01">スコアボーナス</label>
+              <div class="tab-content" id="content1">
+                <div class="formbold-input-flex">
+                  <div>
+                    <label for="time" class="formbold-form-label">
+                      発動間隔時間(s)
+                    </label>
+                    <input
+                      type="number"
+                      id="Trigger-Interval-Time-1"
+                      class="formbold-form-input"
+                    />
+                  </div>
+                  <div>
+                    <label for="number" class="formbold-form-label">
+                        発動確率(%)
+                    </label>
+                    <input
+                      type="number"
+                      id="Trigger-probability-1"
+                      class="formbold-form-input"
+                    />
+                  </div>
+                </div>
+          
+                <div class="formbold-input-flex">
+                  <div>
+                    <label for="time" class="formbold-form-label">
+                        発動時間(s)
+                    </label>
+                    <input
+                      type="number"
+                      id="Activation-time-1"
+                      class="formbold-form-input"
+                    />
+                  </div>
+                  <div>
+                    <label for="number" class="formbold-form-label">
+                        発動効果(%)
+                    </label>
+                    <input
+                      type="number"
+                      id="Activation-effect-1"
+                      class="formbold-form-input"
+                    />
+                  </div>
+                </div>
+    
+              </div>
+              <input id="tab02" type="radio" name="tab" class="tab-switch"><label class="tab-label" for="tab02">コンボボーナス</label>
+              <div class="tab-content" id="content2">
+                <div class="formbold-input-flex">
+                  <div>
+                    <label for="time" class="formbold-form-label">
+                      発動間隔時間(s)
+                    </label>
+                    <input
+                      type="number"
+                      id="Trigger-Interval-Time-2"
+                      class="formbold-form-input"
+                    />
+                  </div>
+                  <div>
+                    <label for="number" class="formbold-form-label">
+                        発動確率(%)
+                    </label>
+                    <input
+                      type="number"
+                      id="Trigger-probability-2"
+                      class="formbold-form-input"
+                    />
+                  </div>
+                </div>
+          
+                <div class="formbold-input-flex">
+                  <div>
+                    <label for="time" class="formbold-form-label">
+                        発動時間(s)
+                    </label>
+                    <input
+                      type="number"
+                      id="Activation-time-2"
+                      class="formbold-form-input"
+                    />
+                  </div>
+                  <div>
+                    <label for="number" class="formbold-form-label">
+                        発動効果(%)
+                    </label>
+                    <input
+                      type="number"
+                      id="Activation-effect-2"
+                      class="formbold-form-input"
+                    />
+                  </div>
+                </div>
+              </div>
+              <button class="formbold-btn" onclick="Calculate()">計算する</button>        
+        </div>
+      </div>
+</body>
+</html>
